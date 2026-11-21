@@ -1,0 +1,34 @@
+# ينشر Edge Functions على Supabase تلقائياً عند تغيير مجلد supabase/functions
+# يحتاج سرّين في GitHub: SUPABASE_ACCESS_TOKEN و SUPABASE_PROJECT_REF (انظر docs/API.md)
+name: Deploy Supabase Functions
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "supabase/functions/**"
+      - "src/data/**"
+      - "scripts/build-catalog.mjs"
+      - ".github/workflows/deploy-functions.yml"
+  workflow_dispatch: # تشغيل يدوي من تبويب Actions
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+      PROJECT_REF: ${{ secrets.SUPABASE_PROJECT_REF }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Build catalog.json for the assistant
+        run: node scripts/build-catalog.mjs
+      - uses: supabase/setup-cli@v1
+        with:
+          version: latest
+      - name: Deploy approve-submission
+        run: supabase functions deploy approve-submission --project-ref "$PROJECT_REF" --no-verify-jwt
+      - name: Deploy student-assistant
+        run: supabase functions deploy student-assistant --project-ref "$PROJECT_REF" --no-verify-jwt
