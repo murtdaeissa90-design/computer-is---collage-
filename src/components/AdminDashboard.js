@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import Link from "next/link";
+import Link from "next/link"; 
 import { useApp } from "./AppProvider";
 import { useAuth } from "./AuthProvider";
 import { supabase, BUCKET, PENDING_BUCKET, SUPABASE_URL } from "@/lib/supabase";
