@@ -6,7 +6,7 @@ import { useApp } from "./AppProvider";
 import { useAuth } from "./AuthProvider";
 import { supabase, BUCKET, PENDING_BUCKET, SUPABASE_URL } from "@/lib/supabase";
 import { safeHref } from "@/lib/files";
-import { fuzzySearch } from "@/lib/search";
+import { fuzzySearch } from "@/lib/search"; 
 import { approveSubmission } from "@/lib/api";
 import AdminStats from "./AdminStats";
 
