@@ -34,62 +34,83 @@ function Mcq({ subject }) {
 
   if (!list.length) return <div className="empty">📂 {L("No questions available.", "لا توجد أسئلة متاحة حالياً.")}</div>;
 
+  const letters = lang === "ar" ? ["أ", "ب", "ج", "د", "هـ", "و"] : ["A", "B", "C", "D", "E", "F"];
   const answered = Object.keys(picked).length;
   const score = Object.entries(picked).filter(([qi, oi]) => list[qi].correct === oi).length;
+  const pct = answered ? Math.round((score / answered) * 100) : 0;
+  const progress = Math.round((answered / list.length) * 100);
   const restart = () => {
     setPicked({});
     setRound((r) => r + 1);
   };
+  const verdict =
+    answered === list.length
+      ? score === list.length
+        ? L("Excellent! 🌟", "ممتاز! 🌟")
+        : score >= list.length / 2
+          ? L("Good job 👍", "أحسنت 👍")
+          : L("Review the lectures and try again 💪", "راجع المحاضرات وحاول مرة أخرى 💪")
+      : null;
 
   return (
-    <div className="mcq-wrap">
-      <div className="mcq-score" aria-live="polite">
-        <span>
-          {L("Score", "النتيجة")}: <b className="mono">{score} / {answered}</b>
-          {answered === list.length &&
-            ` — ${score === list.length ? L("Excellent! 🌟", "ممتاز! 🌟") : score >= list.length / 2 ? L("Good job 👍", "أحسنت 👍") : L("Review the lectures and try again 💪", "راجع المحاضرات وحاول مرة أخرى 💪")}`}
-        </span>
+    <div className="qz">
+      <div className="qz-top" aria-live="polite">
+        <div className="qz-ring" style={{ "--p": pct + "%" }}>
+          <b className="mono">{score}/{answered}</b>
+        </div>
+        <div className="qz-bar">
+          <div className="qz-bar-t">
+            <span>{L(`${answered} of ${list.length} answered`, `أُجيب على ${answered} من ${list.length}`)}</span>
+            <span>{L("Score", "النتيجة")} <b className="mono">{score}</b></span>
+          </div>
+          <div className="qz-track"><div className="qz-fill" style={{ width: progress + "%" }} /></div>
+          {verdict && <div className="qz-verdict">{verdict}</div>}
+        </div>
         {answered > 0 && (
-          <button type="button" className="option-btn" onClick={restart}>{L("🔄 Try again", "🔄 أعد المحاولة")}</button>
+          <button type="button" className="qz-retry" onClick={restart}>{L("🔄 Retry", "🔄 إعادة")}</button>
         )}
       </div>
-      <table className="mcq-table">
-        <thead>
-          <tr>
-            <th>#</th>
-            <th>{L("Question", "السؤال")}</th>
-            <th>{L("Options", "الخيارات")}</th>
-          </tr>
-        </thead>
-        <tbody>
-          {list.map((item, qi) => {
-            const opts = item.options[lang] || item.options.en || item.options.ar;
-            const order = (orders && orders[qi]) || opts.map((_, i) => i);
-            const chosen = picked[qi];
-            return (
-              <tr key={round + "-" + qi}>
-                <td className="mono" style={{ fontWeight: 700, width: 50 }}>{qi + 1}</td>
-                <td style={{ fontWeight: 700 }}>{item.q[lang] || item.q.en || item.q.ar}</td>
-                <td>
-                  {order.map((oi) => {
-                    let cls = "option-btn";
-                    if (chosen !== undefined) {
-                      if (oi === item.correct) cls += " correct";
-                      else if (oi === chosen) cls += " wrong";
-                    }
-                    return (
-                      <button key={oi} type="button" className={cls} disabled={chosen !== undefined || !orders}
-                        onClick={() => setPicked((p) => ({ ...p, [qi]: oi }))}>
-                        {opts[oi]}
-                      </button>
-                    );
-                  })}
-                </td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
+
+      <div className="qz-list">
+        {list.map((item, qi) => {
+          const opts = item.options[lang] || item.options.en || item.options.ar;
+          const order = (orders && orders[qi]) || opts.map((_, i) => i);
+          const chosen = picked[qi];
+          const done = chosen !== undefined;
+          return (
+            <section className="qz-q" key={round + "-" + qi}>
+              <div className="qz-qh">
+                <span className="qz-num mono">{qi + 1}</span>
+                <h3>{item.q[lang] || item.q.en || item.q.ar}</h3>
+              </div>
+              {order.map((oi, pos) => {
+                let cls = "qz-o";
+                let mark = letters[pos] || pos + 1;
+                let tag = null;
+                if (done) {
+                  if (oi === item.correct) {
+                    cls += " ok";
+                    mark = "✓";
+                    tag = chosen === oi ? L("Correct", "صحيح") : L("Answer", "الإجابة");
+                  } else if (oi === chosen) {
+                    cls += " no";
+                    mark = "✕";
+                    tag = L("Yours", "إجابتك");
+                  } else cls += " dim";
+                }
+                return (
+                  <button key={oi} type="button" className={cls} disabled={done || !orders}
+                    onClick={() => setPicked((p) => ({ ...p, [qi]: oi }))}>
+                    <span className="qz-l">{mark}</span>
+                    <span className="qz-t">{opts[oi]}</span>
+                    {tag && <span className="qz-tag">{tag}</span>}
+                  </button>
+                );
+              })}
+            </section>
+          );
+        })}
+      </div>
     </div>
   );
 }

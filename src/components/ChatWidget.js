@@ -115,16 +115,28 @@ export default function ChatWidget() {
 
   return (
     <>
-      <button type="button" className="chat-fab" onClick={() => setOpen((o) => !o)}
-        aria-label={L("Open assistant", "فتح المساعد")} aria-expanded={open}>
-        {open ? "✕" : "🤖"}
+      <button type="button" className={"chat-fab" + (open ? " is-open" : "")} onClick={() => setOpen((o) => !o)}
+        aria-label={open ? L("Close assistant", "إغلاق المساعد") : L("Open assistant", "فتح المساعد")} aria-expanded={open}>
+        {open ? (
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" /></svg>
+        ) : (
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <path d="M5 5.5h14a2 2 0 0 1 2 2v7.5a2 2 0 0 1-2 2h-6.5L8 20.5V17H5a2 2 0 0 1-2-2V7.5a2 2 0 0 1 2-2z" />
+            <path className="spark" d="M12 8.2l.9 2 2 .9-2 .9-.9 2-.9-2-2-.9 2-.9z" fill="currentColor" stroke="none" />
+          </svg>
+        )}
       </button>
 
       {open && (
         <section className="chat-panel" aria-label={L("Students IS Assistant", "مساعد Students IS")}>
           <div className="chat-head">
-            <b>🤖 {L("Students IS Assistant", "مساعد Students IS")}</b>
-            <small>{L("Ask anything about the platform", "اسألني عن أي شيء في المنصة")}</small>
+            <span className="chat-av" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M5 5.5h14a2 2 0 0 1 2 2v7.5a2 2 0 0 1-2 2h-6.5L8 20.5V17H5a2 2 0 0 1-2-2V7.5a2 2 0 0 1 2-2z" /><path d="M12 8.2l.9 2 2 .9-2 .9-.9 2-.9-2-2-.9 2-.9z" fill="currentColor" stroke="none" /></svg>
+            </span>
+            <span className="chat-head-t">
+              <b>{L("Students IS Assistant", "مساعد Students IS")}</b>
+              <small><i className="chat-dot" />{L("Ask anything about the platform", "اسألني عن أي شيء في المنصة")}</small>
+            </span>
           </div>
 
           <div className="chat-body">
