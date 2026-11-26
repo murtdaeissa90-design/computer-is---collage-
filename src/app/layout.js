@@ -1,6 +1,7 @@
 import { Inter, Sora, JetBrains_Mono, Amiri, IBM_Plex_Sans_Arabic, Cairo } from "next/font/google";
 import { AppProvider } from "@/components/AppProvider";
 import { AuthProvider } from "@/components/AuthProvider";
+import PwaRegister from "@/components/PwaRegister";
 import "./globals.css";
 
 // الخطوط الإنجليزية: Inter (أساسي) · Sora (العناوين) · JetBrains Mono (الأكواد والأرقام)
@@ -16,6 +17,13 @@ const cairo = Cairo({ subsets: ["arabic", "latin"], variable: "--f-cairo", displ
 export const metadata = {
   title: "Students IS Education Platform",
   description: "منصة تعليمية لتنظيم المواد الجامعية والشيتات والمحاضرات والامتحانات - جامعة البيان، قسم نظم المعلومات",
+  manifest: "/manifest.webmanifest",
+  icons: { icon: "/icons/icon-192.png", apple: "/icons/apple-touch-icon.png" },
+  appleWebApp: { capable: true, title: "Students IS", statusBarStyle: "black-translucent" },
+};
+
+export const viewport = {
+  themeColor: "#173b67",
 };
 
 export default function RootLayout({ children }) {
@@ -23,6 +31,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en" dir="ltr" className={fonts} suppressHydrationWarning>
       <body>
+        <PwaRegister />
         <AppProvider>
           <AuthProvider>{children}</AuthProvider>
         </AppProvider>
